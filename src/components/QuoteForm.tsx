@@ -50,11 +50,42 @@ const QuoteForm = () => {
       toast.error("Please select an insurance type.");
       return;
     }
+    
+  if (!form.fullName.trim()) {
+    toast.error("Full name is required.");
+    return;
+  }
+  if (form.fullName.length < 2 || form.fullName.length > 100) {
+    toast.error("Full name must be between 2 and 100 characters.");
+    return;
+  }
+
+  
+  if (form.businessName.length < 2 || form.businessName.length > 100) {
+    toast.error("Business name must be between 2 and 100 characters.");
+    return;
+  }
+
+  // Regex to check if name contains numbers
+  const nameRegex = /^[A-Za-z\s]+$/;
+  if (!nameRegex.test(form.fullName)) {
+    toast.error("Full name should not contain numbers or special characters.");
+    return;
+  }
+
+  if (!form.email.trim()) {
+    toast.error("Email is required.");
+    return;
+  }
+
+  if (!form.phone.trim()) {
+    toast.error("Phone number is required.");
+    return;
+  }
 
     setLoading(true);
 
     try {
-      // ✅ Owner Email Payload (Contact Us Template)
       const ownerPayload = {
   full_name: form.fullName,
   business_name: form.businessName,
@@ -65,7 +96,7 @@ const QuoteForm = () => {
   message: form.message || "No message provided"
 };
 
-      console.log("Sending owner email payload:", ownerPayload);
+      // console.log("Sending owner email payload:", ownerPayload);
 
       await emailjs.send(SERVICE_ID, OWNER_TEMPLATE_ID, ownerPayload);
 
@@ -74,9 +105,9 @@ const QuoteForm = () => {
   customer_name: form.fullName,
   customer_email: form.email, // must match "To Email" in template
   insurance_type: insuranceType
-}
+};
 
-      console.log("Sending auto-reply payload:", autoReplyPayload);
+  
 
       await emailjs.send(SERVICE_ID, AUTO_REPLY_TEMPLATE_ID, autoReplyPayload);
 
@@ -94,7 +125,7 @@ const QuoteForm = () => {
 
       setTimeout(() => {
         toast.success("Confirmation email sent to your inbox.");
-      }, 200);
+      }, 3000);
     } catch (error) {
       console.error("QuoteForm email send error:", error);
       // Show detailed error if available
